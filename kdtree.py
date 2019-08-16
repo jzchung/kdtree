@@ -1,3 +1,5 @@
+from typing import List, Any
+
 import numpy as np
 import math
 
@@ -5,18 +7,33 @@ import math
 # features, and n denotes the number of samples.
 
 
-def kd_tree(x):
+def kd_tree(x, depth):
     # construct root
-    '''这里求中位数尚有疑问：根据书本所说取的应该是两个最中间的数中的其中一个（这里可以固定取右侧的数），这样能保证每次
-    递归的根节点都有内容。故先这样实现，而不是使用真正的中位数'''
-
-    median_num = x[0][math.ceil(len(x) / 2)]
-    print(median_num)
-
-    #选出所有特征大小的样本作为root的content属性
-
-    #root的left和right_child属性则使用递归来实现
+    if depth >= len(x):  # 递归层数不会大于维度数
+        return {'content': x}
+    if len(x) == 0:
+        return
+    xt = np.transpose(x)
+    sortedx = np.sort(x[depth])
+    median_num = sortedx[math.floor(len(xt) / 2)]
+    content = []  # 放根节点的内容
+    left = []  # 放左子区的节点
+    right = []  # 放右子区的节点
+    # 选出所有特征大小的样本作为root的content属性
+    for i in range(len(xt)):
+        if x[depth][i] == median_num:  # 等于切分点，放入根节点
+            content.append(xt[i, :].tolist())
+        elif x[depth][i] < median_num:  # 小于切分点，放入左子区
+            left.append(xt[i, :].tolist())
+        elif x[depth][i] > median_num:  # 大于切分点，放入右子区
+            right.append(xt[i, :].tolist())
+    # root的left和right_child属性则使用递归来实现
+    print('content: ', content, ' left: ', left, ' right: ', right)
+    root = {'content': np.transpose(content)}
+    root['right-child'] = kd_tree(np.transpose(right), depth + 1)
+    root['left-child'] = kd_tree(np.transpose(left), depth + 1)
+    return root
 
 # call function
-x = [[1, 2, 3, 4], [5, 6, 7, 8]]
-kd_tree(x)
+x = [[2, 5, 9, 4, 8, 7], [3, 4, 6, 7, 1, 2]]
+kd_tree(x, 0)
