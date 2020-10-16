@@ -6,6 +6,15 @@ import math
 # input: data set X(d by n) where d is the number of dimensions of
 # features, and n denotes the number of samples.
 
+def caldist(n1, n2, p):
+    # this function is designed to calculate the distance bewteen points, p the is norm
+    if p==1:
+        return np.sum(np.abs(n1-n2))
+    elif p==2:
+        return np.sqrt(np.sum(np.abs(n1-n2)**2))
+    else:
+        # infinite
+        return np.abs(n1 - n2).max()
 
 def kd_tree(x, depth):
     # construct root
